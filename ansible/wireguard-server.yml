@@ -1,0 +1,133 @@
+---
+- name: Wireguard deployment
+  hosts: wg-host
+  become: true
+  gather_facts: true
+  vars:
+    wireguard_clients_download_dir: ./clients/
+    wireguard_download_clients: true
+    wireguard_out_interface: enp1s0
+    wireguard_peers:
+      - name: full-tunnel1
+        allowed_ip: "10.213.213.44"
+        publickey: "zmB7OdaBeaIDcRqRFotgJiGkkgMgq87a93+MxAaZvEw="
+      - name: full-tunnel2
+        allowed_ip: "10.213.213.116"
+        publickey: "px2hwQtk+kDdINVKwwcvOHt0nrvemzNKGG2yEIOcFGw="
+      - name: full-tunnel3
+        allowed_ip: "10.213.213.202"
+        publickey: "bYYEysTPWqic1DHBJWSNf4zdnF6Q/m80ox/NC23WQhM="
+    wireguard_peers_allowed_ips: "0.0.0.0/0"
+    sysctl_overwrite:
+      net.ipv4.ip_forward: 1
+
+  tasks:
+
+  - name: Show uptime
+    ansible.builtin.shell: uptime
+    register: uptime_output
+  - debug: var=uptime_output.stdout_lines
+
+  - name: Perform steps on Debian-based hosts
+    when: ansible_facts['os_family'] == 'Debian'
+    block:
+
+      - name: Remove Debian-based dependencies that are no longer required
+        ansible.builtin.apt:
+          autoremove: true
+
+      - name: Remove Debian-based useless packages from the cache
+        ansible.builtin.apt:
+          autoclean: true
+
+      - name: Update cache and upgrade all packages on Debian server
+        ansible.builtin.apt:
+          name: '*'
+          state: latest
+          update_cache: true
+          cache_valid_time: 3600
+        register: apt_output
+      - debug: var=apt_output.stdout_lines
+
+  - name: Harden SSHD
+    ansible.builtin.import_role:
+      name: devsec.hardening.ssh_hardening
+
+  - name: Harden the OS
+    ansible.builtin.import_role:
+      name: devsec.hardening.os_hardening
+
+  - name: Install and configure Fail2Ban
+    ansible.builtin.import_role:
+      name: robertdebock.roles.fail2ban
+
+  - name: Run WireGuard role
+    ansible.builtin.import_role:
+      name: lablabs.wireguard.wireguard
+
+  - name: Install iptables-persistent
+    ansible.builtin.package:
+      name:
+        - iptables
+        - iptables-persistent
+      state: present
+
+  - name: Setup MASQUERADE for server access through vpn server
+    ansible.builtin.iptables:
+      chain: POSTROUTING
+      jump: MASQUERADE
+      table: nat
+      source: "{{ wireguard_address }}"
+      out_interface: "{{ wireguard_out_interface }}"
+
+  - name: Add rule for 51820 UDP
+    ansible.builtin.iptables:
+      chain: INPUT
+      jump: ACCEPT
+      action: insert
+      rule_num: 1
+      protocol: udp
+      destination_port: 51820
+      in_interface: "{{ wireguard_out_interface }}"
+
+  - name: Get the private key for the config file
+    ansible.builtin.slurp:
+      src: "/etc/wireguard/privatekey"
+    register: configkey
+
+  - name: Generate WireGuard configuration file
+    ansible.builtin.template:
+      src: templates/wg-server.j2
+      dest: "/etc/wireguard/wg0.conf"
+      mode: 0600
+
+  - name: Quick down and up
+    ansible.builtin.shell: |
+      sleep 2
+      wg-quick down wg0
+      wg-quick down wg0
+      wg-quick down wg0
+      wg-quick down wg0
+      sudo wg-quick up wg0
+
+  - name: Save current state of the firewall in system file
+    community.general.iptables_state:
+      state: saved
+      path: /etc/iptables/rules.v4
+
+  - name: Setup ipv4 IP forward
+    ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: 1
+      sysctl_set: true
+      state: present
+      reload: true
+
+  - name: Final reboot after everything's done
+    ansible.builtin.reboot:
+      msg: Final reboot after config
+      connect_timeout: 5
+      reboot_timeout: 600
+      pre_reboot_delay: 0
+      post_reboot_delay: 30
+      test_command: uptime

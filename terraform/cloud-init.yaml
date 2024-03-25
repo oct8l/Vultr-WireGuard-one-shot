@@ -1,0 +1,20 @@
+#cloud-config
+
+users:
+  - name: ${init_ssh_username}
+    ssh_authorized_keys:
+      - ${init_public_key}
+    groups: sudo
+    shell: /bin/bash
+    plain_text_passwd: ${init_ssh_pass}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+ssh_pwauth: false
+
+runcmd:
+ - [ userdel, -r, ubuntu]
+ - [ userdel, -r, linuxuser ]
+
+package_update: true
+
+package_upgrade: true

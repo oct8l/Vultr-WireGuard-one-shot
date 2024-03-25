@@ -1,0 +1,27 @@
+#### All direnv files ####
+*.envrc
+
+#### Terraform ####
+# Local .terraform directories
+terraform/**/.terraform/*
+
+# .tfstate files
+terraform/*.tfstate
+terraform/*.tfstate.*
+
+# Ignore override files as they are usually used to override resources locally
+# and so are not checked in
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# Project-specific includes
+!terraform/.terraform.lock.hcl
+
+#### Wireguard configs ####
+ansible/clients*
+
+#### Generated SSH keys ####
+id_rsa
+id_rsa.pub

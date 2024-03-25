@@ -1,0 +1,7 @@
+export TF_VAR_APIKEY=<api key here>
+export TF_VAR_ssh_pass=<ssh password here>
+export VULTR_API_KEY=$TF_VAR_APIKEY
+
+export PRIVKEY1="<key 1 here in quotes>"
+export PRIVKEY2="<key 2 here in quotes>"
+export PRIVKEY3="<key 3 here in quotes>"
