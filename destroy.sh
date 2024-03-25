@@ -5,6 +5,11 @@
 rm id_rsa*
 #########################
 
+#############################################
+## Set a junk variable so destroying works ##
+export TF_VAR_pubkey=junk
+#############################################
+
 ############################################################
 ## Go into the Terraform directory and provision the host ##
 cd terraform
