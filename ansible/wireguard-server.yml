@@ -1,4 +1,13 @@
 ---
+- name: Generate a random /24 subnet within 10.0.0.0/8
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - set_fact:
+        random_octets: "{{ 254 | random }}.{{ 254 | random }}"
+    - debug:
+        msg: "The generated random /24 subnet is 10.{{ random_octets }}.0/24"
+
 - name: Wireguard deployment
   hosts: wg-host
   become: true
@@ -9,17 +18,18 @@
     wireguard_out_interface: enp1s0
     wireguard_peers:
       - name: full-tunnel1
-        allowed_ip: "10.213.213.44"
-        publickey: "zmB7OdaBeaIDcRqRFotgJiGkkgMgq87a93+MxAaZvEw="
+        allowed_ip: "10.{{ hostvars['localhost'].random_octets }}.101"
+        publickey: "{{ lookup('env', 'PUBKEY1') }}"
       - name: full-tunnel2
-        allowed_ip: "10.213.213.116"
-        publickey: "px2hwQtk+kDdINVKwwcvOHt0nrvemzNKGG2yEIOcFGw="
+        allowed_ip: "10.{{ hostvars['localhost'].random_octets }}.102"
+        publickey: "{{ lookup('env', 'PUBKEY2') }}"
       - name: full-tunnel3
-        allowed_ip: "10.213.213.202"
-        publickey: "bYYEysTPWqic1DHBJWSNf4zdnF6Q/m80ox/NC23WQhM="
+        allowed_ip: "10.{{ hostvars['localhost'].random_octets }}.103"
+        publickey: "{{ lookup('env', 'PUBKEY3') }}"
     wireguard_peers_allowed_ips: "0.0.0.0/0"
     sysctl_overwrite:
       net.ipv4.ip_forward: 1
+    wireguard_address: "10.{{ hostvars['localhost'].random_octets }}.1"
 
   tasks:
 
@@ -104,10 +114,10 @@
   - name: Quick down and up
     ansible.builtin.shell: |
       sleep 2
-      wg-quick down wg0
-      wg-quick down wg0
-      wg-quick down wg0
-      wg-quick down wg0
+      sudo wg-quick down wg0
+      sudo wg-quick down wg0
+      sudo wg-quick down wg0
+      sudo wg-quick down wg0
       sudo wg-quick up wg0
 
   - name: Save current state of the firewall in system file

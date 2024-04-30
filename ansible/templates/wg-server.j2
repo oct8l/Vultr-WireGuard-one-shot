@@ -3,5 +3,6 @@ Address = {{ ansible_default_ipv4.address }}
 PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ wireguard_out_interface }} -j MASQUERADE
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ wireguard_out_interface }} -j MASQUERADE
 ListenPort = 51280
+MTU = 1420
 PrivateKey = {{ configkey.content | b64decode }}
 SaveConfig = true

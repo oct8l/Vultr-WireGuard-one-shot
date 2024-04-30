@@ -6,7 +6,6 @@ users:
       - ${init_public_key}
     groups: sudo
     shell: /bin/bash
-    plain_text_passwd: ${init_ssh_pass}
     sudo: ALL=(ALL) NOPASSWD:ALL
 
 ssh_pwauth: false

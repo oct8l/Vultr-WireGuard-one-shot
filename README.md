@@ -9,13 +9,13 @@ Here is the "intended" way for this repo to be used:
 1. Download the repo, optionally as a zip folder, and delete the folder after every time you set up the WireGuard server.
 2. This repo assumes you have [https://direnv.net/](https://direnv.net/) installed to load and unload the `.envrc` files when changing directories. I'd recommend installing it, otherwise if you're so inclined, you can manage the environment variables through another package or manually.
 3. Change to the new directory for the repo once you have the folder downloaded/unzipped/un-tar'd/etc.
-4. Copy `.envrc.example` in the root directory to a file named `.envrc`, and update your variables for your Vultr API key, an SSH password you can set (not sure why I'm keeping this as the created user has passwordless `sudo`...a remnant of some troubleshooting and playing around), and three private keys for the clients to use. I'll hopefully improve this to dynamically generate X number of configs based on environment variables, or maybe a variable set somewhere else.
-  * `direnv` should prompt you to allow the new `.envrc` file with an easy copy and pastable error message! This will ned to be done before running the scripts so the variables exist.
+4. Copy `.envrc.example` in the root directory to a file named `.envrc`, and update your variables for your Vultr API key, and three public and private keys for the clients to use. I'll hopefully improve this to dynamically generate X number of configs based on environment variables, or maybe a variable set somewhere else.
+  * `direnv` should prompt you to allow the new `.envrc` file with an easy copy and pasteable error message! This will ned to be done before running the scripts so the variables exist.
 5. Finally, make the shell script(s) executable with `chmod +x *.sh`, and then turn up the server and let Ansible go to town configuring everything!
 
 The shell script installs the Ansible Galaxy packages required, along with the pip modules used. Then it generates an SSH key to use with the server, sets some environment variables from the `terraform.tfstate` file after the machine is configured, runs the monolithic playbook, and does some `sed` replacements on the config files so they're ready to be pasted into a device.
 
-### Copy and pastable commands for the trusting
+### Copy and pasteable commands for the trusting
 ```sh
 wget https://github.com/oct8l/Vultr-WireGuard-one-shot/archive/refs/heads/main.tar.gz
 tar -xzf main.tar.gz
