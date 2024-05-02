@@ -26,16 +26,15 @@ provider "vultr" {
   retry_limit = 3
 }
 
-# Create a server
 resource "vultr_instance" "wg_tunnel" {
     plan                = "vc2-1c-1gb"
     region              = "dfw"
     os_id               = "1743"
     enable_ipv6         = false
     firewall_group_id   = vultr_firewall_group.wg_fw_grp.id
-    hostname            = "wg_tunnel-${random_string.vm_suffix.result}"
+    hostname            = "wg-tunnel-${random_string.vm_suffix.result}"
     user_data           = (templatefile("${path.module}/cloud-init.yaml", local.templatevars))
-    label               = "wg_tunnel"
+    label               = "wg-tunnel-${random_string.vm_suffix.result}"
 }
 
 resource "vultr_firewall_group" "wg_fw_grp" {
@@ -59,6 +58,7 @@ resource "vultr_firewall_rule" "allow_wg" {
     port = "51820"
     notes= "Allow WireGuard in"
 }
+
 
 locals {
   templatevars = {
