@@ -26,9 +26,13 @@ rm -rf clients/
 ########################################################
 
 
-########################################################################
-## Uninstall the python packages installed in the `run-all.sh` script ##
-pip uninstall -r requirements.txt -y
-########################################################################
+###########################################################################
+## Notify about the python packages installed in the `run-all.sh` script ##
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
-printf "\nALL GONE\n\n"
+printf "If you no longer need the Python packages, you can uninstall them with:\n\n"
+printf "pip uninstall -r \"%s/requirements.txt\" -y\n\n" "${SCRIPT_DIR}"
+###########################################################################
+
+
+printf "\n\e[32m---------\nALL GONE\n---------\e[0m\n\n"
