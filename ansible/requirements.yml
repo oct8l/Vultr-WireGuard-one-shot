@@ -14,8 +14,3 @@ collections:
   - name: robertdebock.roles
     source: https://galaxy.ansible.com
     version: 1.10.6
-roles:
-  - src: https://github.com/githubixx/ansible-role-wireguard.git
-    name: githubixx.ansible_role_wireguard
-    version: 16.0.2
-

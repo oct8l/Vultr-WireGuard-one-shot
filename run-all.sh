@@ -3,11 +3,11 @@
 set -x
 
 #############################################################################################
-# Assume the Inventory file is always unchanged so there isn't always a change to commit ##
-#### This definitely can be improved because I think you can specify an IP address ####
-#### instead of using the whole inventory file, but that's a later me problem ####
+# Assume the Inventory file is always unchanged so there isn't always a change to commit ####
+#### This definitely can be improved because I think you can specify an IP address ##########
+#### instead of using the whole inventory file, but that's a later me problem ###############
 git update-index --assume-unchanged ansible/inventory
-############################################################################################
+#############################################################################################
 
 
 ##################################################################
