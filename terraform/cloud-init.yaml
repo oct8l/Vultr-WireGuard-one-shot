@@ -6,7 +6,6 @@ users:
       - ${init_public_key}
     groups: sudo
     shell: /bin/bash
-    plain_text_passwd: ${init_ssh_pass}
     sudo: ALL=(ALL) NOPASSWD:ALL
 
 ssh_pwauth: false
@@ -15,6 +14,6 @@ runcmd:
  - [ userdel, -r, ubuntu]
  - [ userdel, -r, linuxuser ]
 
-package_update: true
+package_update: false
 
-package_upgrade: true
+package_upgrade: false

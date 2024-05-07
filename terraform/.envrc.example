@@ -1,2 +1,1 @@
 export TF_VAR_APIKEY=<api key>
-export TF_VAR_ssh_pass=<password>

@@ -4,7 +4,19 @@ terraform {
       source = "vultr/vultr"
       version = ">= 2.19.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
+}
+
+resource "random_string" "vm_suffix" {
+  length    = 4
+  special   = false
+  upper     = false
+  numeric   = true
+  lower     = true
 }
 
 # Configure the Vultr Provider
@@ -14,16 +26,15 @@ provider "vultr" {
   retry_limit = 3
 }
 
-# Create a server
-resource "vultr_instance" "wireguard-rc" {
+resource "vultr_instance" "wg_tunnel" {
     plan                = "vc2-1c-1gb"
     region              = "dfw"
     os_id               = "1743"
     enable_ipv6         = false
     firewall_group_id   = vultr_firewall_group.wg_fw_grp.id
-    hostname            = "wireguard-rc"
+    hostname            = "wg-tunnel-${random_string.vm_suffix.result}"
     user_data           = (templatefile("${path.module}/cloud-init.yaml", local.templatevars))
-    label               = "wireguard-rc"
+    label               = "wg-tunnel-${random_string.vm_suffix.result}"
 }
 
 resource "vultr_firewall_group" "wg_fw_grp" {
@@ -48,11 +59,11 @@ resource "vultr_firewall_rule" "allow_wg" {
     notes= "Allow WireGuard in"
 }
 
+
 locals {
   templatevars = {
     init_public_key   = var.pubkey,
-    init_ssh_username = var.ssh_username,
-    init_ssh_pass     = var.ssh_pass
+    init_ssh_username = var.ssh_username
   }
 }
 
@@ -66,21 +77,14 @@ variable "ssh_username" {
   default     = "wireguarder"
 }
 
-variable "ssh_pass" {
-  type        = string
-  description = "Password for the specified user"
-  default     = ""
-  sensitive   = true
-}
-
 variable "APIKEY" {
     type      = string
 }
 
 output "public_ip" {
-    value     = [vultr_instance.wireguard-rc.main_ip]
+    value     = [vultr_instance.wg_tunnel.main_ip]
 }
 
 output "public_ipv6" {
-    value     = [vultr_instance.wireguard-rc.v6_main_ip]
+    value     = [vultr_instance.wg_tunnel.v6_main_ip]
 }
