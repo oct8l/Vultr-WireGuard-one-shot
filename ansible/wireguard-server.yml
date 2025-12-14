@@ -10,7 +10,6 @@
       ansible.builtin.debug:
         msg: "The generated random /24 subnet is 10.{{ random_octets }}.0/24"
 
-
 - name: Wireguard deployment
   hosts: wg-host
   become: true
