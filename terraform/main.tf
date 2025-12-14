@@ -2,11 +2,11 @@ terraform {
   required_providers {
     vultr = {
       source = "vultr/vultr"
-      version = ">= 2.19.0"
+      version = "2.19.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.0"
+      version = "3.6.1"
     }
   }
 }
