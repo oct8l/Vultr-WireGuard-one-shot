@@ -39,3 +39,6 @@ terraform/*_override.tf.json
 
 # Project-specific includes
 !terraform/.terraform.lock.hcl
+
+# Python venv for Ansible
+.venv/
