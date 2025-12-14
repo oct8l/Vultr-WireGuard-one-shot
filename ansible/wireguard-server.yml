@@ -42,7 +42,7 @@
 
       - name: Update cache and upgrade all packages on Debian server
         ansible.builtin.apt:
-          name: '*'
+          name: "*"
           state: latest
           update_cache: true
           cache_valid_time: 3600
