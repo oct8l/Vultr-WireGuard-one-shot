@@ -100,7 +100,7 @@
 
       - name: Run WireGuard role
         ansible.builtin.import_role:
-          name: lablabs.wireguard.wireguard
+          name: githubixx.ansible_role_wireguard
 
       - name: Add iptables POSTROUTING rule for masquerading
         ansible.builtin.iptables:
