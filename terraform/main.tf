@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vultr = {
       source = "vultr/vultr"
-      version = "2.27.1"
+      version = "2.29.1"
     }
     random = {
       source  = "hashicorp/random"
